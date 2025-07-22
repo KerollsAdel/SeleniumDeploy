@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Selenium Test Results</h1>
+    <div id="results">
+        {% if success %}
+            <p class="success">✓ {{ message }}</p>
+            <p>Current URL: {{ current_url }}</p>
+            <p>Page Title: {{ page_title }}</p>
+        {% else %}
+            <p class="error">✗ {{ error }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
