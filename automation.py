@@ -1,4 +1,3 @@
-from errno import ENETRESET
 from selenium import webdriver
 from selenium.webdriver.common import keys
 from selenium.webdriver.common.by import By
