@@ -1,21 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Automation Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        form {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .test-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .test-button {
+            background-color: #28a745;
+            margin: 0 10px;
+        }
+        .test-button:hover {
+            background-color: #218838;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-    <h1>Run Automation</h1>
-    <form method="post">
-        <label>Username:</label><br>
-        <input type="text" name="username" required><br><br>
-        <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
-        <button type="submit">Start Automation</button>
-    </form>
-    {% if result %}
-        <h2>Result:</h2>
-        <p>{{ result }}</p>
-    {% endif %}
+    <div class="container">
+        <h1>🤖 AbuAuf Automation</h1>
+        
+        <form method="post" onsubmit="showLoading()">
+            <label for="username">Email/Username:</label>
+            <input type="text" name="username" id="username" required 
+                   placeholder="Enter your email or username">
+            
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required 
+                   placeholder="Enter your password">
+            
+            <button type="submit">🚀 Start Automation</button>
+        </form>
+        
+        <div class="test-buttons">
+            <button onclick="testChrome()" class="test-button">🔧 Test Chrome</button>
+            <button onclick="checkHealth()" class="test-button">❤️ Health Check</button>
+        </div>
+        
+        <div id="loading">
+            <div class="spinner"></div>
+            <p>Running automation... This may take a few moments.</p>
+        </div>
+        
+        {% if result %}
+            <div class="result {{ 'success' if 'successful' in result.lower() else 'error' if 'error' in result.lower() else 'info' }}">
+                <h3>Result:</h3>
+                {{ result }}
+            </div>
+        {% endif %}
+        
+        <div id="test-result"></div>
+    </div>
+    
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+        
+        async function testChrome() {
+            const resultDiv = document.getElementById('test-result');
+            resultDiv.innerHTML = '<div class="result info">Testing Chrome... Please wait.</div>';
+            
+            try {
+                const response = await fetch('/test-chrome');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <h3>Chrome Test Result:</h3>
+                            ${data.message}<br><br>
+                            <strong>Environment:</strong><br>
+                            GOOGLE_CHROME_BIN: ${data.environment.GOOGLE_CHROME_BIN}<br>
+                            PATH: ${data.environment.PATH}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <h3>Chrome Test Failed:</h3>
+                            ${data.error}<br><br>
+                            <details>
+                                <summary>Technical Details</summary>
+                                <pre>${data.traceback}</pre>
+                            </details>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>Test Request Failed:</h3>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function checkHealth() {
+            const resultDiv = document.getElementById('test-result');
+            resultDiv.innerHTML = '<div class="result info">Checking health... Please wait.</div>';
+            
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="result success">
+                        <h3>Health Check:</h3>
+                        Status: ${data.status}<br>
+                        Environment: ${data.environment}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>Health Check Failed:</h3>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
 </body>
 </html>
