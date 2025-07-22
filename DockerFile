@@ -17,8 +17,5 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
-# Railway uses PORT environment variable
-EXPOSE $PORT
-
-# Use gunicorn to serve the Flask app
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "app:app"]
+EXPOSE 8080
+# Let Railway use the Procfile for the start command
