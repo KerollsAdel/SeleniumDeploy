@@ -6,9 +6,13 @@ from ABUAUF.Credentials import *
 from ABUAUF.Locators import *
 from selenium.webdriver.common.keys import Keys
 def run_automation(username, password):
-    options = webdriver.ChromeOptions()
-    #options.add_argument('--headless')  # Run in headless mode
-    driver = webdriver.Chrome(options=options)
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--window-size=1920,1080')
+    
 
     try:
         driver.get('https://abuauf.com')

@@ -9,18 +9,10 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y google-chrome-stable \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
-
-# Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application files
+RUN pip install -r requirements.txt
 COPY . .
 
-# Expose app port
-EXPOSE 8000
-
-# Start the app using Gunicorn
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:8000"]
+# Keep the container running
+CMD ["python", "app.py"]
