@@ -60,11 +60,11 @@ def run_tests():
     result = perform_login(login_url, username, password)
     
     return render_template('results.html', 
-                         success=result['success'],
-                         message=result.get('message', ''),
-                         error=result.get('error', ''),
-                         current_url=result.get('current_url', ''),
-                         page_title=result.get('page_title', ''))
+                        success=result['success'],
+                        message=result.get('message', ''),
+                        error=result.get('error', ''),
+                        urrent_url=result.get('current_url', ''),
+                        page_title=result.get('page_title', ''))
 
 if __name__ == '__main__':
     main()
