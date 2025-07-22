@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Test Results</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .success { color: green; }
-        .error { color: red; }
-    </style>
+    <title>Results</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Selenium Test Results</h1>
-    <div id="results">
+    <div class="container">
+        <h1>Automation Results</h1>
+        
         {% if success %}
-            <p class="success">✓ {{ message }}</p>
-            <p>Current URL: {{ current_url }}</p>
-            <p>Page Title: {{ page_title }}</p>
+        <div class="success-box">
+            <h2>✓ Success!</h2>
+            <p>{{ message }}</p>
+            <p><strong>URL:</strong> {{ current_url }}</p>
+            <p><strong>Title:</strong> {{ page_title }}</p>
+        </div>
         {% else %}
-            <p class="error">✗ {{ error }}</p>
+        <div class="error-box">
+            <h2>✗ Failed</h2>
+            <p>{{ error }}</p>
+        </div>
         {% endif %}
+        
+        <a href="/" class="back-button">Run Again</a>
     </div>
 </body>
 </html>

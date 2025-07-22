@@ -1,71 +1,39 @@
-import time
+from flask import Flask, render_template, request, jsonify
 import os
 from dotenv import load_dotenv
 from selenium_logic import perform_login
-from flask import Flask, render_template
+import time
 
-# Load environment variables
 load_dotenv()
-
-def main():
-    """Main automation script"""
-    print("Starting login automation...")
-    
-    # Get credentials from environment variables
-    login_url = os.getenv('LOGIN_URL', 'https://abuauf.com')
-    username = os.getenv('USERNAME', 'testrigor@mitchdesigns.com')
-    password = os.getenv('PASSWORD', 'Koko5699#')
-    
-    print(f"Login URL: {login_url}")
-    print(f"Username: {username}")
-    
-    try:
-        # Perform the login
-        result = perform_login(login_url, username, password)
-        
-        if result['success']:
-            print("✓ Login successful!")
-            print(f"✓ {result['message']}")
-            
-            # Add your post-login automation here
-            # For example: scrape data, download files, etc.
-            
-        else:
-            print("✗ Login failed!")
-            print(f"✗ Error: {result['error']}")
-            
-    except Exception as e:
-        print(f"✗ Script error: {str(e)}")
-    
-    # Keep the script running (for Railway deployment)
-    print("Automation completed. Keeping container alive...")
-    while True:
-        time.sleep(60)  # Sleep for 1 minute
-        print("Script is still running...")
-
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('results.html')
+    """Show the dashboard interface"""
+    return render_template('index.html',
+                        login_url=os.getenv('LOGIN_URL', ''),
+                        username=os.getenv('USERNAME', ''))
 
-@app.route('/run-tests')
-def run_tests():
-    # Get credentials from environment variables
-    login_url = os.getenv('LOGIN_URL', 'https://sale-sucre.pages.dev/')
-    username = os.getenv('USERNAME', 'your_username')
-    password = os.getenv('PASSWORD', 'your_password')
+@app.route('/run', methods=['POST'])
+def run_automation():
+    """Handle form submission and run Selenium"""
+    # Get credentials from form or env vars
+    login_url = request.form.get('login_url') or os.getenv('LOGIN_URL')
+    username = request.form.get('username') or os.getenv('USERNAME')
+    password = request.form.get('password') or os.getenv('PASSWORD')
     
-    # Perform the login
+    if not all([login_url, username, password]):
+        return render_template('results.html', 
+                            error="Missing credentials!")
+    
     result = perform_login(login_url, username, password)
     
-    return render_template('results.html', 
+    return render_template('results.html',
                         success=result['success'],
                         message=result.get('message', ''),
                         error=result.get('error', ''),
-                        urrent_url=result.get('current_url', ''),
+                        current_url=result.get('current_url', ''),
                         page_title=result.get('page_title', ''))
 
 if __name__ == '__main__':
-    main()
-    app.run(host='0.0.0.0', port=os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=os.getenv('PORT', 8000))
