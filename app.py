@@ -1,23 +1,17 @@
-from flask import Flask, render_template, request
-import os
-from dotenv import load_dotenv
-from selenium_logic import perform_login
+from flask import Flask, render_template, request, redirect, url_for
+from automation import run_automation
 
-load_dotenv()
-app = Flask(__name__)  # Critical: This must be named 'app'
+app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        # Run automation with provided credentials
+        result = run_automation(username, password)
+        return render_template('index.html', result=result)
     return render_template('index.html')
 
-@app.route('/run', methods=['POST'])
-def run_automation():
-    login_url = request.form.get('login_url') or os.getenv('LOGIN_URL')
-    username = request.form.get('username') or os.getenv('USERNAME')
-    password = request.form.get('password') or os.getenv('PASSWORD')
-    
-    result = perform_login(login_url, username, password)
-    return render_template('results.html', **result)
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=os.getenv('PORT', 8000))
+    app.run(host='0.0.0.0', port=5000)
